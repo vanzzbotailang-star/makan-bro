@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Link Editor Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Press+Start+2P&display=swap');
+        
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .phone-mockup {
+            width: 300px; height: 600px; border: 8px solid #334155; border-radius: 36px;
+            background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+            position: relative; transition: all 0.3s ease; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .sidebar {
+            position: fixed; top: 0; left: -350px; width: 320px; height: 100%;
+            background: #1e293b; transition: 0.3s; z-index: 50; overflow-y: auto;
+            padding: 20px; box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+        }
+        .sidebar.active { left: 0; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        input, select { 
+            width: 100%; background: #0f172a; border: 1px solid #334155; 
+            padding: 8px; border-radius: 6px; color: white; font-size: 14px;
+        }
+        .font-minecraft { font-family: 'Press+Start+2P', cursive; font-size: 10px; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <button onclick="toggleSidebar()" class="fixed top-5 left-5 z-[60] bg-indigo-600 p-3 rounded-lg hover:bg-indigo-500 transition">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <h2 class="text-xl font-bold mb-5 border-b border-slate-700 pb-2">Settings</h2>
+        
+        <div class="input-group">
+            <label>Foto Profile (URL)</label>
+            <input type="text" id="inputPhoto" placeholder="https://..." oninput="updatePreview()">
+        </div>
+
+        <div class="input-group">
+            <label>Nama Anda</label>
+            <input type="text" id="inputName" placeholder="Masukkan Nama" oninput="updatePreview()">
+        </div>
+
+        <div class="input-group">
+            <label>Gaya Tulisan (Font)</label>
+            <select id="inputFont" onchange="updatePreview()">
+                <option value="font-sans">Default</option>
+                <option value="font-minecraft">Minecraft Style</option>
+                <option value="font-bold">Teks Tebal</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Warna Tema</label>
+            <input type="color" id="inputColor" value="#4f46e5" oninput="updatePreview()">
+        </div>
+
+        <hr class="my-4 border-slate-700">
+
+        <h3 class="text-sm font-bold mb-3 text-indigo-400">Social Media</h3>
+        <div class="input-group">
+            <input type="text" id="linkWA" placeholder="Nomor WhatsApp" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <input type="text" id="linkYT" placeholder="URL YouTube" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <input type="text" id="linkIG" placeholder="URL Instagram" oninput="updatePreview()">
+        </div>
+
+        <hr class="my-4 border-slate-700">
+
+        <h3 class="text-sm font-bold mb-3 text-indigo-400">Downloader Menu</h3>
+        <div class="input-group">
+            <label>Nama Downloader</label>
+            <input type="text" id="dlName" placeholder="Contoh: Download Script" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+            <label>Link File/Game</label>
+            <input type="text" id="dlLink" placeholder="https://mediafire.com/..." oninput="updatePreview()">
+        </div>
+    </div>
+
+    <div class="phone-mockup flex flex-col items-center pt-12 p-6" id="phoneBg">
+        <div class="w-20 h-20 rounded-full border-4 border-white/20 mb-4 overflow-hidden bg-slate-800">
+            <img id="displayPhoto" src="https://via.placeholder.com/150" alt="Profile" class="w-full h-full object-cover">
+        </div>
+
+        <h1 id="displayName" class="text-lg font-bold mb-6">Nama Kamu</h1>
+
+        <div id="dlContainer" class="w-full hidden mb-4">
+            <a id="dlAction" href="#" target="_blank" class="block w-full py-3 bg-white/10 border border-white/20 rounded-xl text-center text-sm hover:bg-white/20 transition">
+                <i class="fas fa-download mr-2"></i> <span id="displayDlName">Download</span>
+            </a>
+        </div>
+
+        <div class="flex gap-4 mt-auto mb-10">
+            <a id="displayWA" href="#" target="_blank" class="hidden text-2xl hover:scale-110 transition"><i class="fab fa-whatsapp"></i></a>
+            <a id="displayYT" href="#" target="_blank" class="hidden text-2xl hover:scale-110 transition"><i class="fab fa-youtube"></i></a>
+            <a id="displayIG" href="#" target="_blank" class="hidden text-2xl hover:scale-110 transition"><i class="fab fa-instagram"></i></a>
+        </div>
+
+        <div class="text-[10px] opacity-50 mb-4">Created by Reda</div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function updatePreview() {
+            // Update Teks & Foto
+            const name = document.getElementById('inputName').value;
+            const photo = document.getElementById('inputPhoto').value;
+            const font = document.getElementById('inputFont').value;
+            const color = document.getElementById('inputColor').value;
+
+            const nameEl = document.getElementById('displayName');
+            nameEl.innerText = name || "Nama Kamu";
+            
+            // Reset Font classes
+            nameEl.className = "text-lg mb-6 " + (font === 'font-bold' ? 'font-bold' : font);
+
+            if(photo) document.getElementById('displayPhoto').src = photo;
+
+            // Update Warna
+            document.getElementById('phoneBg').style.borderColor = color;
+            document.getElementById('dlAction').style.backgroundColor = color + "44"; // Transparan
+            document.getElementById('dlAction').style.borderColor = color;
+
+            // Update Social Media
+            const wa = document.getElementById('linkWA').value;
+            const yt = document.getElementById('linkYT').value;
+            const ig = document.getElementById('linkIG').value;
+
+            const waIcon = document.getElementById('displayWA');
+            if(wa) { waIcon.href = "https://wa.me/" + wa; waIcon.classList.remove('hidden'); }
+            
+            const ytIcon = document.getElementById('displayYT');
+            if(yt) { ytIcon.href = yt; ytIcon.classList.remove('hidden'); }
+
+            const igIcon = document.getElementById('displayIG');
+            if(ig) { igIcon.href = ig; igIcon.classList.remove('hidden'); }
+
+            // Update Downloader
+            const dName = document.getElementById('dlName').value;
+            const dLink = document.getElementById('dlLink').value;
+            const dlContainer = document.getElementById('dlContainer');
+
+            if(dName || dLink) {
+                dlContainer.classList.remove('hidden');
+                document.getElementById('displayDlName').innerText = dName || "Download File";
+                document.getElementById('dlAction').href = dLink || "#";
+            } else {
+                dlContainer.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
+
